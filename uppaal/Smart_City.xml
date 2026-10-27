@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+const int H = 200;
+const int K = 3;
+chan heartbeat;
+</declaration>
+	<template>
+		<name x="5" y="5">HealthMonitor</name>
+		<declaration>// Place local declarations here.
+clock x;
+</declaration>
+		<location id="id0" x="68" y="68">
+			<name x="58" y="34">Monitoring</name>
+			<label kind="invariant" x="-17" y="76">x &lt;= K * H</label>
+		</location>
+		<location id="id1" x="-187" y="-170">
+			<name x="-197" y="-204">Unreachable</name>
+		</location>
+		<location id="id2" x="153" y="-246">
+			<name x="143" y="-280">Rerouting</name>
+		</location>
+		<location id="id3" x="0" y="-382">
+			<name x="-10" y="-416">BackupActive</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id4">
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<nail x="68" y="-450"/>
+			<nail x="-17" y="-442"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id2"/>
+			<target ref="id3"/>
+		</transition>
+		<transition id="id6">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="127" y="85">heartbeat?</label>
+			<label kind="assignment" x="119" y="68">x = 0</label>
+			<nail x="127" y="153"/>
+			<nail x="110" y="85"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id1"/>
+			<target ref="id2"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-212" y="-8">x&gt;= K * H</label>
+		</transition>
+	</template>
+	<template>
+		<name>HeartbeatSource</name>
+		<declaration>clock h;</declaration>
+		<location id="id9" x="0" y="0">
+			<name x="-10" y="-34">Active</name>
+			<label kind="invariant" x="-10" y="17">h &lt;= H</label>
+		</location>
+		<location id="id10" x="-102" y="-195">
+		</location>
+		<location id="id11" x="-102" y="-195">
+			<name x="-112" y="-229">Silent</name>
+		</location>
+		<location id="id12" x="-102" y="-195">
+		</location>
+		<init ref="id9"/>
+		<transition id="id13">
+			<source ref="id9"/>
+			<target ref="id12"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="guard" x="76" y="-17">h &gt;= H</label>
+			<label kind="synchronisation" x="76" y="0">heartbeat!</label>
+			<label kind="assignment" x="76" y="17">h = 0</label>
+			<nail x="68" y="42"/>
+			<nail x="68" y="-8"/>
+		</transition>
+	</template>
+	<system>
+hm = HealthMonitor();
+hs = HeartbeatSource();
+
+system hm, hs;
+</system>
+	<queries>
+		<option key="--backwards-order" value="0"/>
+		<query>
+			<formula>A[] (hm.Monitoring imply hm.x &lt;= K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:31:20 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; hm.BackupActive</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:31:11 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (hm.Unreachable &amp;&amp; hm.x == K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:29:01 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (hm.BackupActive &amp;&amp; hm.x &gt;= K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:28:49 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (hs.Active &amp;&amp; hs.h &gt;= H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:28:42 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (hm.Monitoring &amp;&amp; hm.x &gt;= H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:28:35 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (hm.Monitoring &amp;&amp; hm.x &gt;= K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:28:17 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (hs.Active &amp;&amp; hs.h == 0)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:28:07 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (hm.Monitoring &amp;&amp; hm.x == 0)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:27:56 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>A[] (hs.Active imply hs.h &lt;= H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:27:45 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>A[] (hm.Unreachable imply hm.x &gt;= K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:27:29 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>A[] (hm.Monitoring imply hm.x &lt;= K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:27:20 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>A[] (failed &amp;&amp; hm.Monitoring imply hm.f &lt;= K * H)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] (failed &amp;&amp; hm.Monitoring imply hm.x &lt;= K * H)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] (failed &amp;&amp; hm.f &gt;= K * H imply !hm.Monitoring)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] not (failed &amp;&amp; hm.Monitoring &amp;&amp; hm.f &gt;= K * H)</formula>
+			<comment/>
+			<option key="--backwards-order" value="0"/>
+			<option key="--diagnostic" value="0"/>
+		</query>
+		<query>
+			<formula>A[] (hm.BackupActive imply hm.Rerouting || hm.BackupActive)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:24:34 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (failed &amp;&amp; hm.Rerouting)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (failed &amp;&amp; hm.BackupActive)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] (hm.BackupActive imply hm.Rerouting || hm.BackupActive)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:24:25 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>A[] (hm.Unreachable imply hm.x &gt;= K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:24:22 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>A[] (failed &amp;&amp; hm.Monitoring imply hm.f &lt;= K * H)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (failed &amp;&amp; hm.Unreachable &amp;&amp; hm.f &lt;= K * H)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (failed &amp;&amp; hm.Unreachable)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] (failed imply hm.Monitoring || hm.Unreachable || hm.Rerouting || hm.BackupActive)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>A[] (hm.Monitoring imply hm.x &lt;= K * H)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:24:01 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; hm.BackupActive</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:23:57 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; hm.Rerouting</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:23:53 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; hm.Unreachable</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:23:50 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+		<query>
+			<formula>A[] not deadlock
+</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2026-10-25 13:23:47 +0100">
+				<option key="--backwards-order" value="0"/>
+			</result>
+		</query>
+	</queries>
+</nta>
